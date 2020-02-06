@@ -40,21 +40,21 @@ SELECT CASE t.subcateg WHEN -1 THEN ca.categname ELSE ca.categname || ':' || sc.
            SELECT strftime('%m', TRANSDATE) AS month,
                   CASE ifnull(c.categid, -1) WHEN -1 THEN s.categid ELSE c.categid END AS categ,
                   CASE ifnull(c.categid, -1) WHEN -1 THEN ifnull(s.subcategid, -1) ELSE ifnull(c.subcategid, -1) END AS subcateg,
-                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN -IFNULL(CH.CURRVALUE, CF.BASECONVRATE) ELSE cf.BaseConvRate END)) as amount,
-                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN -IFNULL(CH.CURRVALUE, CF.BASECONVRATE) ELSE 0.00 END)) as amountWithdraw,
-                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN 0.00 ELSE IFNULL(CH.CURRVALUE, CF.BASECONVRATE) END)) as amountDeposit
-             FROM checkingaccount_v1 c
+                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN -IFNULL(CH.CURRVALUE, 1) ELSE 1 END)) as amount,
+                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN -IFNULL(CH.CURRVALUE, 1) ELSE 0.00 END)) as amountWithdraw,
+                  sum((CASE c.categid WHEN -1 THEN splittransamount ELSE transamount END) * (CASE transcode WHEN 'Withdrawal' THEN 0.00 ELSE IFNULL(CH.CURRVALUE, 1) END)) as amountDeposit
+             FROM CheckingAccount c
                   LEFT JOIN
-                  splittransactions_v1 s ON s.transid = c.transid
+                  SplitTransactions s ON s.transid = c.transid
                   LEFT JOIN
-                  ACCOUNTLIST_V1 AC ON AC.ACCOUNTID = c.ACCOUNTID
+                  AccountList AC ON AC.ACCOUNTID = c.ACCOUNTID
                   LEFT JOIN
-                  currencyformats_v1 cf ON cf.currencyid = AC.currencyid
+                  CurrencyFormats cf ON cf.currencyid = AC.currencyid
                   LEFT JOIN
-                  CURRENCYHISTORY_V1 AS CH ON CH.CURRENCYID = CF.CURRENCYID AND 
+                  CurrencyHistory AS CH ON CH.CURRENCYID = CF.CURRENCYID AND 
                                               CH.CURRDATE = (
                                                                 SELECT MAX(CRHST.CURRDATE) 
-                                                                  FROM CURRENCYHISTORY_V1 AS CRHST
+                                                                  FROM CurrencyHistory AS CRHST
                                                                  WHERE CRHST.CURRENCYID = CF.CURRENCYID
                                                             )
             WHERE transcode != 'Transfer' AND 
@@ -67,8 +67,8 @@ SELECT CASE t.subcateg WHEN -1 THEN ca.categname ELSE ca.categname || ':' || sc.
                      subcateg
        ) AS t
        LEFT JOIN
-       category_v1 ca ON ca.categid = t.categ
+       Category ca ON ca.categid = t.categ
        LEFT JOIN
-       subcategory_v1 sc ON sc.categid = t.categ AND sc.subcategid = t.subcateg
+       SubCategory sc ON sc.categid = t.categ AND sc.subcategid = t.subcateg
  GROUP BY category
  ORDER BY category asc;

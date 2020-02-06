@@ -6,7 +6,7 @@ SELECT 'month' AS periode_name,
        round(sum(cadata.Deposit) + sum(cadata.Withdrawal) + sum(cadata.Transfer), 2) AS Total,
        (
            SELECT sum(al3.INITIALBAL) 
-             FROM accountlist_V1 AS al3
+             FROM AccountList AS al3
        )
        AS initialbal
   FROM (
@@ -16,17 +16,17 @@ SELECT 'month' AS periode_name,
                   CASE WHEN ca.transcode = 'Transfer' AND 
                             ca.toaccountid IN (
                           SELECT al1.accountid
-                            FROM accountlist_V1 AS al1
+                            FROM AccountList AS al1
                            WHERE al1.accounttype = 'Loan'
                       )
                   THEN -ca.transamount WHEN ca.transcode = 'Transfer' AND 
                                             ca.accountid IN (
                           SELECT al2.accountid
-                            FROM accountlist_V1 AS al2
+                            FROM AccountList AS al2
                            WHERE al2.accounttype = 'Loan'
                       )
                   THEN ca.transamount ELSE 0 END AS Transfer
-             FROM checkingaccount_V1 AS ca
+             FROM CheckingAccount AS ca
             WHERE ca.STATUS NOT IN ('D', 'V')-- and TRANSDATE > date('now', 'start of month','-5 year','localtime') 
        )
        AS cadata

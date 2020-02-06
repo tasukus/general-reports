@@ -16,21 +16,21 @@ SELECT cat.CATEGNAME as CATEGNAME,
        strftime('%m-%Y', rangedates.date5) AS date5,
        strftime('%m-%Y', rangedates.date6) AS date6,
        strftime('%m-%Y', rangedates.date7) AS date7
-  FROM (SELECT sum((CASE tx.categid WHEN -1 THEN st.splittransamount ELSE tx.transamount END) * (ifnull(ch.currvalue, cf.baseconvrate) * 1.0)) AS basetransamount,
+  FROM (SELECT sum((CASE tx.categid WHEN -1 THEN st.splittransamount ELSE tx.transamount END) * (ifnull(ch.currvalue, 1 ) * 1.0)) AS basetransamount,
                CASE tx.categid WHEN -1 THEN st.categid ELSE tx.categid END AS categid,
                tx.transdate AS transdate
-          FROM checkingaccount_v1 AS tx
-               LEFT JOIN splittransactions_v1 AS st ON tx.transid = st.transid
-               LEFT JOIN accountlist_v1 AS acc ON tx.accountid = acc.accountid -- for toaccount conversion to base currency
-               LEFT JOIN currencyformats_v1 AS cf ON acc.currencyid = cf.currencyid
-               LEFT JOIN currencyhistory_v1 AS ch ON ch.currencyid = cf.currencyid
-                                                 AND ch.currdate = ( SELECT max(crhst.currdate) FROM currencyhistory_v1 AS crhst WHERE crhst.currencyid = cf.currencyid)
+          FROM CheckingAccount AS tx
+               LEFT JOIN SplitTransactions AS st ON tx.transid = st.transid
+               LEFT JOIN AccountList AS acc ON tx.accountid = acc.accountid -- for toaccount conversion to base currency
+               LEFT JOIN CurrencyFormats AS cf ON acc.currencyid = cf.currencyid
+               LEFT JOIN CurrencyHistory AS ch ON ch.currencyid = cf.currencyid
+                                                 AND ch.currdate = ( SELECT max(crhst.currdate) FROM CurrencyHistory AS crhst WHERE crhst.currencyid = cf.currencyid)
          WHERE (tx.TRANSDATE >= date('now', 'start of month', '-7 month') AND tx.TRANSDATE < date('now')) --ignore future transactions
            AND tx.status NOT IN ('V','D')
            AND tx.transcode = 'Withdrawal'
       GROUP BY (CASE tx.categid WHEN -1 THEN st.categid ELSE tx.categid END), tx.transdate
        ) AS alltx
-  JOIN category_v1 AS cat on alltx.categid = cat.categid
+  JOIN Category AS cat on alltx.categid = cat.categid
   JOIN (SELECT date('now', 'start of month') AS date0,
                date('now', 'start of month', '-1 month') AS date1,
                date('now', 'start of month', '-2 month') AS date2,

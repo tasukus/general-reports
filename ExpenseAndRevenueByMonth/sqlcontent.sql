@@ -5,10 +5,10 @@ select
     sum(Withdrawal) as Withdrawal,
     round(sum(Deposit) + sum(Withdrawal),2) as Total,
     (
-        (SELECT sum(initialbal) FROM accountlist_V1)
+        (SELECT sum(initialbal) FROM AccountList)
         +
 	(
-	    SELECT sum(totransamount) FROM checkingaccount_V1
+	    SELECT sum(totransamount) FROM CheckingAccount
 	    where
                 TRANSDATE <= date('now', 'start of month','-4 year','localtime')
 	)
@@ -26,7 +26,7 @@ from (
         end as Withdrawal
         --,*
     from
-        checkingaccount_V1
+        CheckingAccount
     where
         TRANSDATE > date('now', 'start of month','-4 year','localtime')
         and status <>'V'

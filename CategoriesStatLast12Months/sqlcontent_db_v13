@@ -1,4 +1,4 @@
-with CURRENCYFORMATS_V1 as (with h as (select  CURRENCYID 
+with CurrencyFormats as (with h as (select  CURRENCYID 
         , max(CURRVALUE) CURRVALUE from CURRENCYHISTORY 
         where  CURRDATE<= date('now')
         group by CURRENCYID)
@@ -29,7 +29,7 @@ select c.CURRENCYID, c.CURRENCYNAME, c.PFX_SYMBOL, c.SFX_SYMBOL
     from checkingaccount c
     left join splittransactions s on s.transid=c.transid
     left join ACCOUNTLIST AC on AC.ACCOUNTID = c.ACCOUNTID
-    left join currencyformats_V1 cf on cf.currencyid=AC.currencyid
+    left join CurrencyFormats cf on cf.currencyid=AC.currencyid
     where transcode != 'Transfer'
     and c.status !='V'
     and ac.status !='Closed'

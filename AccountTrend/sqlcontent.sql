@@ -7,10 +7,10 @@ select strftime('%Y', t1.TRANSDATE) as YEAR
             from
                 (select ACCOUNTID, TRANSDATE, STATUS,
                     (case when TRANSCODE = 'Deposit' then TRANSAMOUNT else -TRANSAMOUNT end) as TRANSAMOUNT
-                from CHECKINGACCOUNT_V1
+                from CheckingAccount
                 union all
                 select TOACCOUNTID, TRANSDATE, STATUS, TOTRANSAMOUNT 
-                from CHECKINGACCOUNT_V1
+                from CheckingAccount
                 where TRANSCODE = 'Transfer') as t2
             where t2.ACCOUNTID = t1.ACCOUNTID
                 and t2.STATUS NOT IN ('D', 'V')
@@ -21,13 +21,13 @@ select strftime('%Y', t1.TRANSDATE) as YEAR
 from
     (select ACCOUNTID, TRANSDATE, STATUS,
         (case when TRANSCODE = 'Deposit' then TRANSAMOUNT else -TRANSAMOUNT end) as TRANSAMOUNT
-    from CHECKINGACCOUNT_V1
+    from CheckingAccount
     union all
     select TOACCOUNTID, TRANSDATE, STATUS, TOTRANSAMOUNT 
-    from CHECKINGACCOUNT_V1
+    from CheckingAccount
     where TRANSCODE = 'Transfer') as t1
-inner join ACCOUNTLIST_V1 as a on a.ACCOUNTID = t1.ACCOUNTID
-inner join CURRENCYFORMATS_V1 as c on c.CURRENCYID = a.CURRENCYID
+inner join AccountList as a on a.ACCOUNTID = t1.ACCOUNTID
+inner join CurrencyFormats as c on c.CURRENCYID = a.CURRENCYID
 where ACCOUNTNAME = 'Account1'
     and t1.STATUS NOT IN ('D', 'V')
 group by YEAR, MONTH

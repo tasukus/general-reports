@@ -5,16 +5,15 @@ SELECT c.CURRENCYNAME AS CURRENCYNAME,
        c.GROUP_SEPARATOR AS GROUP_SEPARATOR,
        c.DECIMAL_POINT AS DECIMAL_POINT,
        count( * ) AS Quantity,
-       c.BASECONVRATE AS BASECONVRATE,
        IFNULL(CH.CURRVALUE, 0) AS HISTBASECONVRATE
-  FROM CURRENCYFORMATS_V1 AS c
+  FROM CurrencyFormats AS c
        INNER JOIN
-       ACCOUNTLIST_V1 AS a ON a.CURRENCYID = c.CURRENCYID
+       AccountList AS a ON a.CURRENCYID = c.CURRENCYID
        LEFT JOIN
-       CURRENCYHISTORY_V1 AS CH ON C.CURRENCYID = CH.CURRENCYID AND 
+       CurrencyHistory AS CH ON C.CURRENCYID = CH.CURRENCYID AND 
                                    CH.CURRDATE = (
                                                      SELECT MAX(CRHST.CURRDATE) 
-                                                       FROM CURRENCYHISTORY_V1 AS CRHST
+                                                       FROM CurrencyHistory AS CRHST
                                                       WHERE CRHST.CURRENCYID = C.CURRENCYID
                                                  )
  WHERE a.STATUS = 'Open'

@@ -14,23 +14,23 @@ select dic.TransCode, dic.CategoryId, dic.Category Category
     , bcf.sfx_symbol BaseCurrencySuffixSymbol
 from (
     select distinct TransCode, CategId CategoryId, CategName category 
-    from category_v1 
-        join checkingaccount_v1 using (CategId) 
+    from Category 
+        join CheckingAccount using (CategId) 
     where 1=1
         and TransCode <> 'Transfer'
 ) dic 
-    join InfoTable_v1 it on (it.InfoName = 'BASECURRENCYID')
-    join CurrencyFormats_v1 bcf on (it.InfoValue = bcf.CurrencyId)
+    join infotable it on (it.InfoName = 'BASECURRENCYID')
+    join CurrencyFormats bcf on (it.InfoValue = bcf.CurrencyId)
     left join (
         select CategoryId, Category, total(BasedTransAmount) ActualAmount
         from (
             select ifnull(st.CategId, t.CategId) CategoryId, c.CategName category
-                , ifnull(st.SplitTransAmount, t.TransAmount) * cf.BaseConvRate BasedTransAmount
-            from (checkingaccount_v1 t
-                left join SplitTransactions_v1 st on (t.TransId = st.TransId))
-                join Category_v1 c on (c.CategId = ifnull(st.CategId, t.CategId))
-                join AccountList_v1 a on (t.AccountId = a.AccountId)
-                join CurrencyFormats_v1 cf on (a.CurrencyId = cf.CurrencyId)
+                , ifnull(st.SplitTransAmount, t.TransAmount) * 1 BasedTransAmount
+            from (CheckingAccount t
+                left join SplitTransactions st on (t.TransId = st.TransId))
+                join Category c on (c.CategId = ifnull(st.CategId, t.CategId))
+                join AccountList a on (t.AccountId = a.AccountId)
+                join CurrencyFormats cf on (a.CurrencyId = cf.CurrencyId)
             where 1=1
                 and t.TransCode <> 'Transfer'
                 and t.STATUS NOT IN ('D', 'V')
@@ -55,9 +55,9 @@ from (
                     when Period = 'Daily' then Amount * 30.41667
                 end
             )) BudgetAmount
-        from BudgetTable_v1 bt
-            join BudgetYear_v1 by on (bt.BudgetYearId = by.BudgetYearId)
-            join Category_v1 c on (bt.CategId = c.CategId)
+        from BudgetTable bt
+            join BudgetYear by on (bt.BudgetYearId = by.BudgetYearId)
+            join Category c on (bt.CategId = c.CategId)
         where 1=1
             and by.BudgetYearName = strftime('%Y-%m', date('now', '0 month'))
         group by c.CategId, c.CategName

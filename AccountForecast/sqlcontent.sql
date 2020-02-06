@@ -4,22 +4,22 @@ select b.TRANSAMOUNT, b.REPEATS, b.NUMOCCURRENCES, b.NEXTOCCURRENCEDATE, c.PFX_S
     from
         (select ACCOUNTID, STATUS,
             (case when TRANSCODE = 'Deposit' then TRANSAMOUNT else -TRANSAMOUNT end) as TRANSAMOUNT
-        from CHECKINGACCOUNT_V1
+        from CheckingAccount
         union all
         select TOACCOUNTID, STATUS, TOTRANSAMOUNT
-        from CHECKINGACCOUNT_V1
+        from CheckingAccount
         where TRANSCODE = 'Transfer') as t
     where  t.ACCOUNTID = a.ACCOUNTID
         and t.STATUS NOT IN ('V','D')) as Balance, a.ACCOUNTNAME as ACCOUNTNAME
 from 
     (select ACCOUNTID, STATUS, REPEATS, NUMOCCURRENCES, NEXTOCCURRENCEDATE,
         (case when TRANSCODE = 'Deposit' then TRANSAMOUNT else -TRANSAMOUNT end) as TRANSAMOUNT
-    from BILLSDEPOSITS_V1
+    from BillsDeposits
     union all
     select TOACCOUNTID, STATUS, REPEATS, NUMOCCURRENCES, NEXTOCCURRENCEDATE, TOTRANSAMOUNT
-    from BILLSDEPOSITS_V1
+    from BillsDeposits
     where TRANSCODE = 'Transfer') as b
-inner join ACCOUNTLIST_V1 as a on b.ACCOUNTID = a.ACCOUNTID
-inner join CURRENCYFORMATS_V1 as c on c.CURRENCYID = a.CURRENCYID
+inner join AccountList as a on b.ACCOUNTID = a.ACCOUNTID
+inner join CurrencyFormats as c on c.CURRENCYID = a.CURRENCYID
 where b.STATUS NOT IN ('V','D')
 and a.ACCOUNTNAME = 'Account1';

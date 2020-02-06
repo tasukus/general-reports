@@ -19,8 +19,8 @@ FROM (SELECT	t1.transid		AS id,
 	''						AS notes,
 	t1.payeeid				AS payeeid,
 	t1.accountid				AS accountid
-	FROM splittransactions_v1 AS t2
-		INNER JOIN checkingaccount_v1 AS t1	ON t1.TRANSID = t2.TRANSID
+	FROM SplitTransactions AS t2
+		INNER JOIN CheckingAccount AS t1	ON t1.TRANSID = t2.TRANSID
 	WHERE  
 	t1.transcode = "Withdrawal"
 UNION ALL
@@ -32,13 +32,13 @@ SELECT	ca.transid	AS id,
 	ca.notes			AS notes,
 	ca.payeeid		AS payeeid,
 	ca.accountid		AS accountid
-	FROM  checkingaccount_v1 AS ca
+	FROM  CheckingAccount AS ca
 	WHERE  
 		ca.transcode = "Withdrawal" AND ca.categid <>-1
 ) AS wd_data
-LEFT JOIN accountlist_v1 AS acc ON wd_data.accountid = acc.accountid
-LEFT JOIN CURRENCYFORMATS_V1 AS c ON c.CURRENCYID = acc.CURRENCYID
-LEFT JOIN category_v1 AS c ON wd_data.catid=c.categid
-LEFT JOIN subcategory_v1 AS sc ON wd_data.subcatid= sc.subcategid
-LEFT JOIN payee_v1 AS p ON wd_data.payeeid = p.payeeid
+LEFT JOIN AccountList AS acc ON wd_data.accountid = acc.accountid
+LEFT JOIN CurrencyFormats AS c ON c.CURRENCYID = acc.CURRENCYID
+LEFT JOIN Category AS c ON wd_data.catid=c.categid
+LEFT JOIN SubCategory AS sc ON wd_data.subcatid= sc.subcategid
+LEFT JOIN PayEe AS p ON wd_data.payeeid = p.payeeid
 ORDER BY date ASC;

@@ -4,7 +4,7 @@ select
   sum(Deposit) as Deposit,
   sum(Withdrawal) as Withdrawal,
   round(sum(Deposit) + sum(Withdrawal),2) as Total,
-    (SELECT sum(initialbal) FROM accountlist_V1) as initialbal
+    (SELECT sum(initialbal) FROM AccountList) as initialbal
 from (  
   select 
     strftime('%Y', TRANSDATE) as periode,
@@ -18,7 +18,7 @@ from (
     end as Withdrawal
     --,*
   from
-    checkingaccount_V1
+    CheckingAccount
   where status <>'V'
 )
 group by periode
