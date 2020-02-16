@@ -6,7 +6,7 @@ Reports can be created using Money Manager Ex as well.
 
 ![compose general report](https://cdn.jsdelivr.net/gh/moneymanagerex/moneymanagerex@master/docs/img/grm.gif "compose general report")
 
-[![Build Status](https://secure.travis-ci.org/moneymanagerex/general-reports.png)](http://travis-ci.org/moneymanagerex/general-reports)
+[![Build Status](https://secure.travis-ci.org/tasukus/general-reports.png)](http://travis-ci.org/moneymanagerex/general-reports)
 
 Report structure
 ----------------
