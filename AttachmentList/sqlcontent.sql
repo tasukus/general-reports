@@ -6,7 +6,7 @@ C.StartDate||' | '||C.AssetName||' | '
 A.description AS Description, A.filename AS File,
 (SELECT infovalue FROM infotable WHERE infoname = 'ATTACHMENTSFOLDER:Win' COLLATE NOCASE) AS BasePath,
 '\'||A.reftype||'\'||A.filename AS FilePath, '' AS BasepathLUA
-FROM Attachment A INNER JOIN assets_v1 C ON C.assetid = A.refid
+FROM Attachment A INNER JOIN assets C ON C.assetid = A.refid
 WHERE A.reftype = "Asset"
 
 UNION ALL
